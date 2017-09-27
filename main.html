@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Annotator demo</title>
+    <style>
+      body {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+        letter-spacing: 0.01rem;
+        font-size: 22px;
+        line-height: 1.5;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+      header, article {
+        width: 740px;
+        margin: 2em auto;
+      }
+      .highlight {
+        background: rgba(255, 10, 10, 0.3);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1 id="titleName">Title</h1>
+    </header>
+<input type="file" multiple><br>
+<select></select><br>
+<textarea id="myTextarea" style="display:none;"></textarea>
+    <article id="mainText">
+        default text
+    </article>
+
+<!-- The main load script -->
+<script>
+  const [input, select, textarea, reader] = [
+    document.querySelector("input[type=file]")
+    , document.querySelector("select")
+    , document.querySelector("textarea")
+    , new FileReader
+  ];
+  let [files, data, fn] = [
+    [],
+    [], (file, reader) => new Promise((resolve, reject) => {
+      reader.onload = () => {
+        reader.onload = reader.onerror = null;
+        resolve(reader.result);
+      }
+      reader.onerror = reject;
+      reader.readAsText(file);
+    })
+  ];
+  input.onchange = async() => {
+    select.innerHTML = "";
+    files.length = data.length = 0;
+    for (const file of input.files) {
+      const {
+        name
+      } = file;
+      const option = new Option(name, files.length);
+      files.push(file);
+      select.appendChild(option);
+      let result = await fn(file, reader);
+      data.push(result);
+    }
+    textarea.value = data[select.value];
+    updateInnerHTML();
+  }
+
+function updateInnerHTML() {
+    var x = document.getElementById("myTextarea").value;
+    document.getElementById("mainText").innerHTML = x;
+    document.getElementById("titleName").innerHTML = select.options[select.value].text;
+}
+
+  select.onchange = () => {
+    textarea.value = data[select.value];
+    updateInnerHTML();
+  }
+</script>
+
+
+    <!-- The main Annotator script 
+    <script src="annotator.min.js"></script>
+    <script>
+      if (typeof annotator === 'undefined') {
+        alert("Oops! it looks like you haven't built Annotator. " +
+              "Either download a tagged release from GitHub, or build the " +
+              "package by running `make`");
+      } else {
+        var app = new annotator.App();
+        app.include(annotator.ui.main);
+        app.start().then(function () {
+     app.annotations.load();
+});
+      }
+    </script>
+-->
+
+<script>
+function getSelectionText(){
+    var selectedText = ""
+    if (window.getSelection){ // all modern browsers and IE9+
+        selectedText = window.getSelection().toString()
+    }
+    console.log(selectedText)
+    return selectedText
+}
+
+function highlight(text)
+{
+    inputText = document.getElementById("mainText");
+    var innerHTML = inputText.innerHTML;
+    var index = innerHTML.indexOf(text);
+    if ( index >= 0 )
+    { 
+        innerHTML = innerHTML.substring(0,index) + "<span class='highlight'>" + innerHTML.substring(index,index+text.length) + "</span>" + innerHTML.substring(index + text.length);
+        inputText.innerHTML = innerHTML; 
+    }
+
+}
+</script>
+
+<button onclick="highlight(getSelectionText())">Highlight</button>
+
+<style>
+.highlight
+{
+background-color:yellow;
+}
+</style>
+<table>
+    <tr>
+        <td><button onclick="saveTextAsFile()">Save Annotated Text to File</button></td>
+    </tr>
+</table>
+ 
+<script type="text/javascript">
+ 
+function saveTextAsFile()
+{
+    var textToSave = document.getElementById("mainText").innerHTML;
+    var textToSaveAsBlob = new Blob([textToSave], {type:"text/html"});
+    var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+    var fileNameToSaveAs = select.options[select.value].text;
+    //document.getElementById("inputFileNameToSaveAs").value;
+ 
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs.concat('_output');
+    downloadLink.innerHTML = "Download File";
+    downloadLink.href = textToSaveAsURL;
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+ 
+    downloadLink.click();
+}
+ 
+function destroyClickedElement(event)
+{
+    document.body.removeChild(event.target);
+}
+ 
+</script>
+
+  </body>
+</html>
