@@ -19,20 +19,46 @@
       .highlight {
         background: rgba(255, 10, 10, 0.3);
       }
+      .topbar {
+          overflow: hidden;
+          background-color: #999;
+          position: fixed; /* Set the navbar to fixed position */
+          top: 0; /* Position the navbar at the top of the page */
+          width: 100%; /* Full width */
+          height: 180px;
+      }
+      .bodydiv {
+margin: 180px auto 0;
+      width: 100%;
+            
+      }
     </style>
   </head>
 
   <body>
+<div class='topbar'>
+        <div class"loadmenu">
+            <input type="file" multiple><br>
+            <select></select><br>
+            <textarea id="myTextarea" style="display:none;"></textarea>
+        </div>
+        <div class="highlightmenu">
+
+<button onclick="addHighlight(getSelectionText())">Add Highlight</button>
+<button onclick="undoHighlight(getSelectionText())">Undo Highlight</button>
+        </div>
+        <div class="savefile">
+        <button onclick="saveTextAsFile()">Save Annotated Text to File</button>
+        </div>
+</div>
+<div class='bodydiv'>
     <header>
       <h1 id="titleName">Title</h1>
     </header>
-<input type="file" multiple><br>
-<select></select><br>
-<textarea id="myTextarea" style="display:none;"></textarea>
     <article id="mainText">
         default text
     </article>
-
+</div>
 <!-- The main load script -->
 <script>
   const [input, select, textarea, reader] = [
@@ -100,6 +126,8 @@ function updateInnerHTML() {
 -->
 
 <script>
+
+var nHighlights=0;
 function getSelectionText(){
     var selectedText = ""
     if (window.getSelection){ // all modern browsers and IE9+
@@ -109,21 +137,31 @@ function getSelectionText(){
     return selectedText
 }
 
-function highlight(text)
+function addHighlight(text)
 {
     inputText = document.getElementById("mainText");
     var innerHTML = inputText.innerHTML;
     var index = innerHTML.indexOf(text);
     if ( index >= 0 )
     { 
-        innerHTML = innerHTML.substring(0,index) + "<span class='highlight'>" + innerHTML.substring(index,index+text.length) + "</span>" + innerHTML.substring(index + text.length);
+        innerHTML = innerHTML.substring(0,index) + "<span id='highlight"+nHighlights+"' class='highlight'>" + innerHTML.substring(index,index+text.length) + "</span>" + innerHTML.substring(index + text.length);
         inputText.innerHTML = innerHTML; 
+        nHighlights++;
     }
 
 }
+function undoHighlight(text)
+{
+    highlightID = "highlight"+nHighlights;
+    console.log(highlightID);
+    myHighlight = document.getElementById("highlight"+(nHighlights-1));
+    console.log(myHighlight);
+    parent = myHighlight.parentNode;
+    parent.insertBefore(  myHighlight.firstChild, myHighlight );
+     parent.removeChild(myHighlight);
+    nHighlights--;
+}
 </script>
-
-<button onclick="highlight(getSelectionText())">Highlight</button>
 
 <style>
 .highlight
@@ -131,11 +169,6 @@ function highlight(text)
 background-color:yellow;
 }
 </style>
-<table>
-    <tr>
-        <td><button onclick="saveTextAsFile()">Save Annotated Text to File</button></td>
-    </tr>
-</table>
  
 <script type="text/javascript">
  
