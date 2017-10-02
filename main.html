@@ -27,6 +27,17 @@
           width: 100%; /* Full width */
           height: 180px;
       }
+      .actions {
+width: 250px;
+    float:left; /* add this */
+    /*border: 1px solid red;*/
+}
+
+.guide {
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+    font-size:smaller
+}
+
       .bodydiv {
 margin: 180px auto 0;
       width: 100%;
@@ -37,18 +48,22 @@ margin: 180px auto 0;
 
   <body>
 <div class='topbar'>
-        <div class"loadmenu">
-            <input type="file" multiple><br>
+        <div class="actions">
+<textarea id="myTextarea" style="display:none;"></textarea>
             <select></select><br>
-            <textarea id="myTextarea" style="display:none;"></textarea>
+            
+<input type="file" multiple><button onclick="saveTextAsFile()">Save Annotated Text to File</button><br>
+<button onclick="addHighlight(getSelectionText())">Add Highlight</button> (alt+a) <br>
+<button onclick="undoHighlight(getSelectionText())">Undo Highlight</button> (alt+s)
         </div>
-        <div class="highlightmenu">
-
-<button onclick="addHighlight(getSelectionText())">Add Highlight</button>
-<button onclick="undoHighlight(getSelectionText())">Undo Highlight</button>
-        </div>
-        <div class="savefile">
-        <button onclick="saveTextAsFile()">Save Annotated Text to File</button>
+        <div class="guide">
+            <ol>
+              <li>Load your files by clicking the "Choose Files" button and selecting them</li>
+              <li>Select text and press either the "Add highlight" button or alt+a to highlight</li>
+              <li>Press "Undo highlight" or alt+s to undo most recent highlight</li>
+              <li>Repeat 2 for all desired highlights</li>
+              <li>Save your file by pressing "Save Annotated Text to File"</li>
+            </ol>
         </div>
 </div>
 <div class='bodydiv'>
@@ -152,6 +167,7 @@ function addHighlight(text)
 }
 function undoHighlight(text)
 {
+    if (nHighlights > 0) {
     highlightID = "highlight"+nHighlights;
     console.log(highlightID);
     myHighlight = document.getElementById("highlight"+(nHighlights-1));
@@ -160,7 +176,28 @@ function undoHighlight(text)
     parent.insertBefore(  myHighlight.firstChild, myHighlight );
      parent.removeChild(myHighlight);
     nHighlights--;
+    } else {
+    console.log("No highlights to remove")
+    }
 }
+
+// define a handler
+function doc_keyUp(e) {
+    //console.log(e.keyCode);
+    //console.log(e.altKey);
+    
+    // alt + a to add highlight
+    if (e.altKey && e.keyCode == 65) {
+        addHighlight(getSelectionText());
+    }
+    // alt + s to undo highlight
+    else if (e.altKey && e.keyCode == 83) {
+        undoHighlight(getSelectionText());
+    }
+}
+// register the handler 
+document.addEventListener('keyup', doc_keyUp, false);
+
 </script>
 
 <style>
