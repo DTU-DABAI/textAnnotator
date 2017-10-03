@@ -1,5 +1,5 @@
 # textAnnotator
-Simple application in HTML/JavaScript for annotating text files with highlights
+Simple application in JavaScript for annotating text files with highlights
 
 # Usage
 Open *main.html* in your browser (only tested in chrome) and follow the instructions. 
