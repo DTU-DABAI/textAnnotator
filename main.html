@@ -128,32 +128,16 @@ function updateInnerHTML() {
   }
 </script>
 
-
-    <!-- The main Annotator script 
-    <script src="annotator.min.js"></script>
-    <script>
-      if (typeof annotator === 'undefined') {
-        alert("Oops! it looks like you haven't built Annotator. " +
-              "Either download a tagged release from GitHub, or build the " +
-              "package by running `make`");
-      } else {
-        var app = new annotator.App();
-        app.include(annotator.ui.main);
-        app.start().then(function () {
-     app.annotations.load();
-});
-      }
-    </script>
--->
-
 <script>
 
 function mouseUpAddHighlight(){
-console.log('mouseUpOnText');
-if (window.getSelection){
+console.log('mouseUpAdd');
+console.log(window.getSelection().toString());
+console.log(window.getSelection().toString());
+if (window.getSelection().toString()){
     addHighlight(getSelectionText());
-}
 console.log('added option');
+}
 }
 
 function mouseUpRemoveHighlight(){
@@ -172,36 +156,16 @@ removeHighlight(elementMouseIsOver);
 }
 //console.log('removed option');
 }
-
-
 var nHighlights=0;
+
 function getSelectionText(){
     var selectedText = ""
-    if (window.getSelection){ // all modern browsers and IE9+
+    if (window.getSelection().toString()){ // all modern browsers and IE9+
         selectedText = window.getSelection().toString()
     }
-    console.log(selectedText)
+    console.log("Selected:"+selectedText)
     return selectedText
 }
-
-function addHighlightOption(text)
-{
-    var x = document.getElementById("colorSelector").value;
-    //console.log(x)
-    inputText = document.getElementById("mainText");
-    var innerHTML = inputText.innerHTML;
-    var index = innerHTML.indexOf(text);
-    if ( index >= 0 )
-    { 
-        console.log("'highlight"+x+"'")
-        innerHTML = innerHTML.substring(0,index+text.length)+"MyOption" + innerHTML.substring(index + text.length);
-        inputText.innerHTML = innerHTML; 
-        nHighlights++;
-    }
-
-}
-
-
 
 function addHighlight(text)
 {
@@ -209,11 +173,14 @@ function addHighlight(text)
     //console.log(x)
     inputText = document.getElementById("mainText");
     var innerHTML = inputText.innerHTML;
+    console.log(innerHTML);
+    console.log(innerHTML==="");
     var index = innerHTML.indexOf(text);
     if ( index >= 0 )
     { 
         console.log("'highlight"+x+"'")
         innerHTML = innerHTML.substring(0,index) + "<span id='highlight"+nHighlights+"' class='highlight"+x+"'>" + innerHTML.substring(index,index+text.length) + "</span>" + innerHTML.substring(index + text.length);
+        console.log("new HTML:" + innerHTML);
         inputText.innerHTML = innerHTML; 
         nHighlights++;
     }
