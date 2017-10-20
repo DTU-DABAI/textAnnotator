@@ -20,7 +20,7 @@ elif remote == "origin":
     print("Pre-push hook pushing to mirrors")
     for remoteName in repo.remotes:
         if str(remoteName) != "origin":
-            print("Pushing to:" + str(remoteName))
+            print("Pushing to: " + str(remoteName))
             os.system("git push --mirror --quiet " + str(remoteName))
     print("Push to mirrors completed")
     sys.exit(0)
