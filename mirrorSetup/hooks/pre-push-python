@@ -7,7 +7,7 @@ import os
 # arg2 -- URL to which the push is being done
 
 remote = sys.argv[1]
-print(remote)
+# print(remote)
 
 if remote == "mirror_repo":
     sys.exit(0)
